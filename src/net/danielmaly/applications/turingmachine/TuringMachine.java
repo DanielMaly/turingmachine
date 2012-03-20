@@ -79,7 +79,7 @@ public class TuringMachine extends Observable {
 	
 	public void performRead() throws IllegalProgramException {
 		
-		if(this.state == "Halt") {
+		if(this.state.equals("Halt")) {
 			masterState = MasterState.HALTED;
 			this.setChanged();
 			this.notifyObservers();
