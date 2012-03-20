@@ -49,8 +49,11 @@ public class TuringMachine extends Observable {
 	
 	public void performWrite() {
 		operation = Operation.WRITING;
-		tape.remove(tapeIndex);
-		tape.add(tapeIndex, this.currentInstruction.getWriteSymbol());
+		if (tapeIndex < tape.size()) {
+			tape.remove(tapeIndex);
+			tape.add(tapeIndex, this.currentInstruction.getWriteSymbol());
+		}
+		else tape.add(this.currentInstruction.getWriteSymbol());
 		this.setChanged();
 		this.notifyObservers();
 	}
@@ -58,6 +61,10 @@ public class TuringMachine extends Observable {
 	public void performMove(int direction) {
 		operation = Operation.MOVING;
 		tapeIndex += direction == Instruction.LEFT? -1 : 1;
+		if(tapeIndex < 0) {
+			masterState = MasterState.ERROR;
+			throw new IndexOutOfBoundsException("Ran off start end of tape");
+		}
 		this.setChanged();
 		this.notifyObservers();
 	}
@@ -65,14 +72,35 @@ public class TuringMachine extends Observable {
 	public void transitionState(String newState) {
 		this.state = newState;
 		operation = null;
+		
 		this.setChanged();
 		this.notifyObservers();
 	}
 	
 	public void performRead() throws IllegalProgramException {
 		
-		this.currentInstruction = program.fetch(state, readFromTape());
+		if(this.state == "Halt") {
+			masterState = MasterState.HALTED;
+			this.setChanged();
+			this.notifyObservers();
+		}
 		
+		try {
+			this.currentInstruction = program.fetch(state, readFromTape());
+			
+		}
+		catch(IllegalProgramException ex) {
+			masterState = MasterState.ERROR;
+			throw ex;
+		}
+		
+	}
+	
+	public void start() {
+		this.state = "Start";
+		masterState = MasterState.STARTED;
+		this.setChanged();
+		this.notifyObservers();
 	}
 	
 }
