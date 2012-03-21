@@ -19,7 +19,7 @@ public class LogTable extends JTable {
 		
 		
 		//DEBUG
-		this.setBackground(Color.GRAY);
+		this.setBackground(Color.LIGHT_GRAY);
 		model.addEntry(new Entry(new String[]{"Blah", "158","1", "0", "L"}));
 	}
 	

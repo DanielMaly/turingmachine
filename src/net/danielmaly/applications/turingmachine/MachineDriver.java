@@ -4,7 +4,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import java.awt.*;
+
 
 public class MachineDriver implements Observer {
 	
@@ -26,6 +29,7 @@ public class MachineDriver implements Observer {
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.CENTER;
 		c.fill= GridBagConstraints.BOTH;
+		c.gridwidth = 3;
 		c.weightx = 1;
 		c.weighty = 0.6;
 		window.add(machinePanel, c);
@@ -37,11 +41,33 @@ public class MachineDriver implements Observer {
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.SOUTHWEST;
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.5;
+		c.weightx = 0.25;
 		c.weighty = 0.4;
+		c.insets = new Insets(8,2,2,0);
 		
 		window.add(logPane, c);
 		
+		programPanel.setBorder(new TitledBorder("Program options"));
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.3;
+		c.weighty = 0.4;
+		
+		window.add(programPanel, c);
+		
+		commandPanel.setBorder(new TitledBorder("Machine options"));
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.2;
+		c.weighty = 0.4;
+		
+		window.add(commandPanel, c);
 		
 		window.validate();
 	}
