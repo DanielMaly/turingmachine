@@ -62,7 +62,7 @@ public class TuringMachine extends Observable {
 		currentTableEntry[3] = "" + this.currentInstruction.getWriteSymbol();
 		
 		this.setChanged();
-		this.notifyObservers();
+		this.notifyObservers("writeFinished");
 	}
 	
 	public void performMove(int direction) {
@@ -76,7 +76,7 @@ public class TuringMachine extends Observable {
 		currentTableEntry[4] = direction == Instruction.LEFT? "L" : "R";
 		
 		this.setChanged();
-		this.notifyObservers();
+		this.notifyObservers("moveFinished");
 	}
 	
 	public void transitionState(String newState) {
@@ -84,7 +84,7 @@ public class TuringMachine extends Observable {
 		operation = null;
 		
 		this.setChanged();
-		this.notifyObservers();
+		this.notifyObservers("stateChanged");
 	}
 	
 	public void performRead() throws IllegalProgramException {
@@ -96,7 +96,7 @@ public class TuringMachine extends Observable {
 		if(this.state.equals("Halt")) {
 			masterState = MasterState.HALTED;
 			this.setChanged();
-			this.notifyObservers();
+			this.notifyObservers("readFinished");
 		}
 		
 		try {
@@ -114,7 +114,7 @@ public class TuringMachine extends Observable {
 		this.state = "Start";
 		masterState = MasterState.STARTED;
 		this.setChanged();
-		this.notifyObservers();
+		this.notifyObservers("started");
 	}
 	
 }

@@ -41,7 +41,10 @@ public class ProgramPanel extends JPanel {
 	private JButton load = new JButton("Load from file");
 	private JButton newp = new JButton("New program");
 	
-	public ProgramPanel() {
+	private MachineDriver driver;
+	
+	public ProgramPanel(MachineDriver d) {
+		this.driver = d;
 		this.setPreferredSize(new Dimension(0,0));
 		this.setBorder(new TitledBorder("Program options"));
 		this.setLayout(new GridBagLayout());

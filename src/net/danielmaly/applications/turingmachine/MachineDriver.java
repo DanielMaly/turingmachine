@@ -15,16 +15,23 @@ public class MachineDriver implements Observer, ActionListener {
 	private TuringMachine machine = new TuringMachine();
 	
 	private JFrame window = new MainFrame();
-	private MachinePanel machinePanel = new MachinePanel();
+	private MachinePanel machinePanel;
 	private LogTable log = new LogTable(machine);
-	private JPanel programPanel = new ProgramPanel();
-	private JPanel commandPanel = new CommandPanel();
+	private JPanel programPanel;
+	private JPanel commandPanel;
 	
 	/** Initializes the GUI.*/
 	public void initialize() {
 		
 		window.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		
+		machinePanel = new MachinePanel(machine);
+		programPanel = new ProgramPanel(this);
+		commandPanel = new CommandPanel(this);
+		
+		JSeparator separator = new JSeparator();
+		separator.setOpaque(false);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -40,7 +47,7 @@ public class MachineDriver implements Observer, ActionListener {
 		logPane.getViewport().setBackground(programPanel.getBackground());
 		c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 1;
+		c.gridy = 2;
 		c.anchor = GridBagConstraints.SOUTHWEST;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.25;
@@ -50,8 +57,17 @@ public class MachineDriver implements Observer, ActionListener {
 		window.add(logPane, c);
 		
 		c = new GridBagConstraints();
-		c.gridx = 1;
+		c.gridx = 0;
 		c.gridy = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = 3;
+		c.weightx = 1;
+		c.weighty = 0;
+		window.add(separator, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 2;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.3;
 		c.weighty = 0.4;
@@ -60,7 +76,7 @@ public class MachineDriver implements Observer, ActionListener {
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
-		c.gridy = 1;
+		c.gridy = 2;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.2;
 		c.weighty = 0.4;
