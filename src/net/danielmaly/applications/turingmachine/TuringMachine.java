@@ -13,6 +13,8 @@ public class TuringMachine extends Observable {
 	private ArrayList<Character> tape = new ArrayList<Character> ();
 	private Program program;
 	
+	private String[] currentTableEntry = new String[5];
+	
 	public MasterState getMasterState() {
 		return masterState;
 	}
@@ -44,6 +46,8 @@ public class TuringMachine extends Observable {
 		this.notifyObservers();
 		char readChar = tape.get(tapeIndex);
 		
+		currentTableEntry[2] = "" + readChar;
+		
 		return readChar;
 	}
 	
@@ -54,6 +58,9 @@ public class TuringMachine extends Observable {
 			tape.add(tapeIndex, this.currentInstruction.getWriteSymbol());
 		}
 		else tape.add(this.currentInstruction.getWriteSymbol());
+		
+		currentTableEntry[3] = "" + this.currentInstruction.getWriteSymbol();
+		
 		this.setChanged();
 		this.notifyObservers();
 	}
@@ -65,6 +72,9 @@ public class TuringMachine extends Observable {
 			masterState = MasterState.ERROR;
 			throw new IndexOutOfBoundsException("Ran off start end of tape");
 		}
+		
+		currentTableEntry[4] = direction == Instruction.LEFT? "L" : "R";
+		
 		this.setChanged();
 		this.notifyObservers();
 	}
@@ -78,6 +88,10 @@ public class TuringMachine extends Observable {
 	}
 	
 	public void performRead() throws IllegalProgramException {
+		
+		currentTableEntry = new String[5];
+		currentTableEntry[0] = this.state;
+		currentTableEntry[1] = this.tapeIndex + "";
 		
 		if(this.state.equals("Halt")) {
 			masterState = MasterState.HALTED;
