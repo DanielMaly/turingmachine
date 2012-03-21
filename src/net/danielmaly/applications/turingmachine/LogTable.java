@@ -62,11 +62,11 @@ public class LogTable extends JTable {
 	
 	private class Entry {
 		
-		String state;
-		String read;
-		String written;
-		String moved;
-		String nextState;
+		private String state;
+		private String read;
+		private String written;
+		private String moved;
+		private String nextState;
 		
 		public Entry(String[] strings) {
 			state = strings[0];

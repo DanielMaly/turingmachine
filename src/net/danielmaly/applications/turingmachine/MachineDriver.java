@@ -7,17 +7,18 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 import java.awt.*;
+import java.awt.event.*;
 
 
-public class MachineDriver implements Observer {
+public class MachineDriver implements Observer, ActionListener {
 	
 	private TuringMachine machine = new TuringMachine();
 	
 	private JFrame window = new MainFrame();
 	private MachinePanel machinePanel = new MachinePanel();
 	private LogTable log = new LogTable(machine);
-	private JPanel programPanel = new JPanel();
-	private JPanel commandPanel = new JPanel();
+	private JPanel programPanel = new ProgramPanel();
+	private JPanel commandPanel = new CommandPanel();
 	
 	/** Initializes the GUI.*/
 	public void initialize() {
@@ -36,6 +37,7 @@ public class MachineDriver implements Observer {
 		
 		JScrollPane logPane = new JScrollPane(log);
 		logPane.setPreferredSize(new Dimension(0,0));
+		logPane.getViewport().setBackground(programPanel.getBackground());
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 1;
@@ -43,11 +45,9 @@ public class MachineDriver implements Observer {
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.25;
 		c.weighty = 0.4;
-		c.insets = new Insets(8,2,2,0);
+		c.insets = new Insets(8,2,2,2);
 		
 		window.add(logPane, c);
-		
-		programPanel.setBorder(new TitledBorder("Program options"));
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -57,8 +57,6 @@ public class MachineDriver implements Observer {
 		c.weighty = 0.4;
 		
 		window.add(programPanel, c);
-		
-		commandPanel.setBorder(new TitledBorder("Machine options"));
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -71,8 +69,23 @@ public class MachineDriver implements Observer {
 		
 		window.validate();
 	}
+		
+
+
+	@Override
+	public void update(Observable o, Object arg) {
+		
+		
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 	
-	
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -81,13 +94,6 @@ public class MachineDriver implements Observer {
 			}
 		});
 	
-	}
-
-
-	@Override
-	public void update(Observable o, Object arg) {
-		
-		
 	}
 
 }
