@@ -5,7 +5,6 @@ import java.awt.*;
 
 import javax.swing.JPanel;
 
-import quicktime.app.sg.SGCaptureCallback;
 
 
 public class MachinePanel extends JPanel {
@@ -65,7 +64,7 @@ public class MachinePanel extends JPanel {
 		int width = this.getWidth();
 		int height = this.getHeight();
 		ArrayList<Character> tape = machine.getTape();
-		int index = machine.getTapeIndex();
+		//int index = machine.getTapeIndex();
 	
 		final int SQUARE_SIDE = (int) (0.445 * height * tapeSize);
 		
@@ -129,9 +128,17 @@ public class MachinePanel extends JPanel {
 		int centerSquareX = (width / 2) - (SQUARE_SIDE / 2);
 		int startTapeX = leftIndicatorX + 35;
 		int endTapeX = width - startTapeX; 
+		int realTapeIndex = machine.getTapeIndex();
 		
+		if(moveAnimationState != 0) {
+			if(machine.getOperation() == Operation.MOVING_LEFT) {
+				realTapeIndex++;
+			}
+			else if(machine.getOperation() == Operation.MOVING_RIGHT) {
+				realTapeIndex--;
+			}
+		}
 		
-		//g.drawRoundRect(startTapeX - 5, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
 		
 		
 		//DRAW SCANNER
@@ -148,7 +155,9 @@ public class MachinePanel extends JPanel {
 		else if(machine.getOperation() == Operation.MOVING_RIGHT) {
 			startSquareX -= moveAnimationState * SQUARE_SIDE / MOVE_ANIMATION_STEPS; 
 		}
-		for(int i = index, j = startSquareX; i >= 0 && j >= -SQUARE_SIDE ; i--, j -= SQUARE_SIDE) {
+		for(int i = realTapeIndex, j = startSquareX; i >= 0 && j >= -SQUARE_SIDE ; i--, j -= SQUARE_SIDE) {
+			char c = i >= tape.size() ? ' ' : tape.get(i);
+			drawSymbol(c, SQUARE_SIDE, j, topTapeY, g);
 			g.drawRoundRect(j, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
 		}
 		
@@ -160,8 +169,9 @@ public class MachinePanel extends JPanel {
 		else if(machine.getOperation() == Operation.MOVING_RIGHT) {
 			startSquareX -= moveAnimationState * SQUARE_SIDE / MOVE_ANIMATION_STEPS; 
 		}
-		for(int i = index, j = startSquareX; j < width + SQUARE_SIDE + 5; i++, j+= SQUARE_SIDE) {
-			
+		for(int i = realTapeIndex + 1, j = startSquareX; j < width + SQUARE_SIDE + 5; i++, j+= SQUARE_SIDE) {
+			char c = i >= tape.size() ? ' ' : tape.get(i);
+			drawSymbol(c, SQUARE_SIDE, j, topTapeY, g);
 			g.drawRoundRect(j, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
 		}
 		
@@ -180,6 +190,17 @@ public class MachinePanel extends JPanel {
 		g.fillRect(endTapeX, topTapeY, width - endTapeX, SQUARE_SIDE + 1);
 		g.setColor(Color.BLACK);
 		
+	}
+	
+	public void drawSymbol(char ch, int SQUARE_SIDE, int startSquareX, int startSquareY,Graphics g) {
+		String drawnString = ch + "";
+		int fontSize = (int) (SQUARE_SIDE * 0.8);
+		g.setFont(new Font(g.getFont().getName(), Font.PLAIN, fontSize));
+		
+		FontMetrics fm = g.getFontMetrics();
+		int stringX = startSquareX + ((SQUARE_SIDE - fm.stringWidth(drawnString)) / 2) ;
+		int stringY = (int) (startSquareY + SQUARE_SIDE - ((SQUARE_SIDE - fm.getHeight() / 1.5) / 2));
+		g.drawString(drawnString, stringX, stringY);
 	}
 
 }

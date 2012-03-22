@@ -20,7 +20,7 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 	private CommandPanel commandPanel;
 	
 	private int speed = 50;
-	private final static int BASE_SPEED = 4000;
+	private final static int BASE_SPEED = 8000;
 	
 	/** Initializes the GUI.*/
 	public void initialize() {
@@ -120,7 +120,7 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 			this.machinePanel.setTapeSize(((JSlider)e.getSource()).getValue() / 100.0);
 			machinePanel.repaint();
 		}
-		else if(e.getSource().equals(programPanel.getSpinner())) {
+		else if(e.getSource().equals(programPanel.getSpinner()) && machine.getMasterState() != MasterState.STARTED) {
 			this.machine.setTapeIndex((Integer) ((JSpinner)e.getSource()).getValue());
 			machinePanel.repaint();
 		}
@@ -128,15 +128,24 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 	
 	@Override 
 	public void keyTyped(KeyEvent e) {
-		this.initializeTape();
+		if(machine.getMasterState() != MasterState.STARTED) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					initializeTape();
+				}
+			});
+		}
 	}
 	
 	public void initializeTape() {
 		resetMachine();
+		System.out.println("Initialize tape called");
 		ArrayList<Character> newTape = new ArrayList<Character>();
 		String initialTape = programPanel.getInitialTapeText();
+		System.out.println("Text in field is " + initialTape);
 		for(int i = 0; i < initialTape.length(); i++) {
 			newTape.add(new Character(initialTape.charAt(i)));
+			System.out.println("Added " + initialTape.charAt(i));
 		}
 		
 		machine.setTape(newTape);
@@ -194,11 +203,9 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 				}
 				catch(IllegalProgramException ex) {
 					machine.setMasterState(MasterState.ERROR);
-					ex.printStackTrace();
 				}
 				catch(IndexOutOfBoundsException ex) {
 					machine.setMasterState(MasterState.ERROR);
-					ex.printStackTrace();
 				}
 				
 				finally {
@@ -225,7 +232,6 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 				try {
 					Thread.sleep(sleepFor);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 			
@@ -241,7 +247,6 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 				try {
 					Thread.sleep(sleepFor);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -256,7 +261,6 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 				try {
 					Thread.sleep(sleepFor);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 			
