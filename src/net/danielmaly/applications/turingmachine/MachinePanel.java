@@ -6,21 +6,18 @@ import java.awt.*;
 import javax.swing.JPanel;
 
 
-public class MachinePanel extends JPanel implements Observer {
+public class MachinePanel extends JPanel {
 	
 	private TuringMachine machine;
+	private int animationState = 0;
 	
 	public MachinePanel(TuringMachine machine) {
 		this.machine = machine;
 		this.setBackground(Color.WHITE);
 	}
 	
-	
-
-	@Override
-	public void update(Observable o, Object arg1) {
-		
-
+	public void incrementAnimation() {
+		animationState = (animationState + 1) % 24;
 	}
 	
 	@Override
@@ -44,7 +41,6 @@ public class MachinePanel extends JPanel implements Observer {
 		
 		int leftIndicatorX = 20;
 		int leftIndicatorY = (int) (height * 0.07);
-		int indicatorDescX = leftIndicatorX + 20;
 		
 		FontMetrics fm = g.getFontMetrics();
 		

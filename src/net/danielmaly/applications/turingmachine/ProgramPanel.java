@@ -115,7 +115,16 @@ public class ProgramPanel extends JPanel {
 		
 		positionSpin.setValue(new Integer(0));
 		
-		
+		load.addActionListener(driver);
+		newp.addActionListener(driver);
+	}
+	
+	public String getInitialTapeText() {
+		return characters.getText();
+	}
+	
+	public int getInitialTapeIndex() {
+		return (Integer) (positionSpin.getValue());
 	}
 
 }

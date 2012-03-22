@@ -2,7 +2,7 @@ package net.danielmaly.applications.turingmachine;
 
 import java.util.*;
 
-public class TuringMachine extends Observable {
+public class TuringMachine {
 	
 	private MasterState masterState = MasterState.HALTED;
 	private Operation operation;
@@ -39,11 +39,23 @@ public class TuringMachine extends Observable {
 	public void setTape(ArrayList<Character> tape) {
 		this.tape = tape;
 	}
+	public String[] getEntry() {
+		return currentTableEntry;
+	}
 	
+	public int getTapeIndex() {
+		return tapeIndex;
+	}
+	public void setTapeIndex(int tapeIndex) {
+		this.tapeIndex = tapeIndex;
+	}
 	private char readFromTape() {
 		operation = Operation.READING;
-		this.setChanged();
-		this.notifyObservers();
+
+		if(tapeIndex >= tape.size() || tape.get(tapeIndex) == null) {
+			tape.add(tapeIndex, ' ');
+		}
+		
 		char readChar = tape.get(tapeIndex);
 		
 		currentTableEntry[2] = "" + readChar;
@@ -60,12 +72,10 @@ public class TuringMachine extends Observable {
 		else tape.add(this.currentInstruction.getWriteSymbol());
 		
 		currentTableEntry[3] = "" + this.currentInstruction.getWriteSymbol();
-		
-		this.setChanged();
-		this.notifyObservers("writeFinished");
 	}
 	
-	public void performMove(int direction) {
+	public void performMove() {
+		int direction = this.currentInstruction.getMove();
 		operation = Operation.MOVING;
 		tapeIndex += direction == Instruction.LEFT? -1 : 1;
 		if(tapeIndex < 0) {
@@ -74,17 +84,16 @@ public class TuringMachine extends Observable {
 		}
 		
 		currentTableEntry[4] = direction == Instruction.LEFT? "L" : "R";
-		
-		this.setChanged();
-		this.notifyObservers("moveFinished");
 	}
 	
-	public void transitionState(String newState) {
-		this.state = newState;
+	public void transitionState() {
+		if(this.state == null) {
+			this.state = "Start";
+		}
+		else {
+			this.state = this.currentInstruction.getNextState();
+		}
 		operation = null;
-		
-		this.setChanged();
-		this.notifyObservers("stateChanged");
 	}
 	
 	public void performRead() throws IllegalProgramException {
@@ -94,9 +103,8 @@ public class TuringMachine extends Observable {
 		currentTableEntry[1] = this.tapeIndex + "";
 		
 		if(this.state.equals("Halt")) {
-			masterState = MasterState.HALTED;
-			this.setChanged();
-			this.notifyObservers("readFinished");
+			this.halt();
+			return;
 		}
 		
 		try {
@@ -110,11 +118,14 @@ public class TuringMachine extends Observable {
 		
 	}
 	
+	public void halt() {
+		this.setMasterState(MasterState.HALTED); 
+		this.state = "Halt";
+		this.currentTableEntry = new String[] {"Halt", "", "", "", ""};
+	}
+	
 	public void start() {
-		this.state = "Start";
 		masterState = MasterState.STARTED;
-		this.setChanged();
-		this.notifyObservers("started");
 	}
 	
 }

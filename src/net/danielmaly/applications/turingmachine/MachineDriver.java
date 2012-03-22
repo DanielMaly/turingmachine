@@ -1,24 +1,31 @@
 package net.danielmaly.applications.turingmachine;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.awt.*;
 import java.awt.event.*;
 
 
-public class MachineDriver implements Observer, ActionListener {
+public class MachineDriver implements ActionListener, ChangeListener {
 	
 	private TuringMachine machine = new TuringMachine();
 	
 	private JFrame window = new MainFrame();
 	private MachinePanel machinePanel;
 	private LogTable log = new LogTable(machine);
-	private JPanel programPanel;
-	private JPanel commandPanel;
+	private ProgramPanel programPanel;
+	private CommandPanel commandPanel;
+	
+	private int speed;
+	private final static int BASE_SPEED = 1000;
 	
 	/** Initializes the GUI.*/
 	public void initialize() {
@@ -85,19 +92,22 @@ public class MachineDriver implements Observer, ActionListener {
 		
 		window.validate();
 	}
-		
-
-
-	@Override
-	public void update(Observable o, Object arg) {
-		
-		
-	}
 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getActionCommand().equals("Start")) {
+			new Thread(new Animation()).start();
+		}
+		else if(e.getActionCommand().equals("Halt")) {
+			machine.setMasterState(MasterState.HALTED);
+		}
+		
+	}
+	
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		this.speed = ((JSlider)e.getSource()).getValue();
 		
 	}
 	
@@ -111,5 +121,108 @@ public class MachineDriver implements Observer, ActionListener {
 		});
 	
 	}
+	
+	private class Animation implements Runnable {
+		
+		@Override
+		public void run() {
+			if(machine.getProgram() == null) {
+				JOptionPane.showMessageDialog(null, "There is no program loaded into the machine!");
+				return;
+			}
+			ArrayList<Character> newTape = new ArrayList<Character>();
+			String initialTape = programPanel.getInitialTapeText();
+			for(int i = 0; i < initialTape.length(); i++) {
+				newTape.add(new Character(initialTape.charAt(i)));
+			}
+			
+			machine.setTape(newTape);
+			machine.setTapeIndex(programPanel.getInitialTapeIndex());
+			machine.start();
+			machinePanel.repaint();
+			
+			while(machine.getMasterState() == MasterState.STARTED) {
+				try {
+					machine.transitionState();
+					machine.performRead();
+					if(machine.getMasterState() == MasterState.HALTED)
+						return;
+					this.animateRead();
+					
+					machine.performWrite();
+					this.animateWrite();
+					
+					machine.performMove();
+					this.animateMove();
+					
+					log.update();
+				}
+				catch(IllegalProgramException ex) {
+					machine.setMasterState(MasterState.ERROR);
+					log.addErrorEntry();
+					ex.printStackTrace();
+				}
+				catch(IndexOutOfBoundsException ex) {
+					machine.setMasterState(MasterState.ERROR);
+					log.addErrorEntry();
+					ex.printStackTrace();
+				}
+				
+				finally {
+					machinePanel.repaint();
+				}
+				
+			}
+			
+			machinePanel.repaint();
+		}
+		
+		public void animateRead() {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						
+					}
+				});
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		public void animateWrite() {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						
+					}
+				});
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		public void animateMove() {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						
+					}
+				});
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			
+		}
+	}
+
+
 
 }

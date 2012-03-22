@@ -24,7 +24,11 @@ public class LogTable extends JTable {
 	}
 	
 	public void update() {
-		
+		model.addEntry(new Entry(machine.getEntry()));
+	}
+	
+	public void addErrorEntry() {
+		model.addEntry(new Entry(new String[] {"ERROR", "", "", "", ""}));
 	}
 	
 	

@@ -21,6 +21,12 @@ public class CommandPanel extends JPanel {
 		this.setBorder(new TitledBorder("Machine options"));
 		this.setLayout(new GridLayout(3,1,10,10));
 		
+		start.addActionListener(driver);
+		halt.addActionListener(driver);
+		speedSlider.addChangeListener(driver);
+		speedSlider.setMaximum(100);
+		speedSlider.setMinimum(1);
+		
 		JPanel speedPanel = new JPanel();
 		speedPanel.setLayout(new FlowLayout());
 		speedPanel.add(speedLabel);

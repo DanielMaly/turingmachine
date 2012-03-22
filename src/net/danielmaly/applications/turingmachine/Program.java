@@ -30,4 +30,8 @@ public class Program implements Serializable {
 		}
 		else return fetched;
 	}
+	
+	public static Program getDummyProgram() {
+		return null;
+	}
 }
