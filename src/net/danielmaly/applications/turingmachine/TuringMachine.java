@@ -128,4 +128,13 @@ public class TuringMachine {
 		masterState = MasterState.STARTED;
 	}
 	
+	public void reset() {
+		this.tape = new ArrayList<Character> ();
+		this.currentTableEntry = null;
+		this.currentInstruction = null;
+		this.state = null;
+		this.operation = null;
+		this.tapeIndex = 0;
+	}
+	
 }

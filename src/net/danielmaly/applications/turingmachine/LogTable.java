@@ -20,15 +20,28 @@ public class LogTable extends JTable {
 		
 		//DEBUG
 		this.setBackground(Color.LIGHT_GRAY);
-		model.addEntry(new Entry(new String[]{"Blah", "158","1", "0", "L"}));
+		
 	}
 	
 	public void update() {
 		model.addEntry(new Entry(machine.getEntry()));
+		this.revalidate();
 	}
 	
 	public void addErrorEntry() {
 		model.addEntry(new Entry(new String[] {"ERROR", "", "", "", ""}));
+		this.revalidate();
+	}
+	
+	public void addHaltEntry() {
+		model.addEntry(new Entry(new String[] {"Halt", "", "", "", ""}));
+		this.revalidate();
+	}
+	
+	public void removeAllEntries() {
+		model = new LogTableModel();
+		this.setModel(model);
+		this.revalidate();
 	}
 	
 	

@@ -25,7 +25,7 @@ public class MachineDriver implements ActionListener, ChangeListener {
 	private CommandPanel commandPanel;
 	
 	private int speed;
-	private final static int BASE_SPEED = 1000;
+	private final static int BASE_SPEED = 4000;
 	
 	/** Initializes the GUI.*/
 	public void initialize() {
@@ -92,6 +92,11 @@ public class MachineDriver implements ActionListener, ChangeListener {
 		
 		window.validate();
 	}
+	
+	public void resetMachine() {
+		log.removeAllEntries();
+		machine.reset();
+	}
 
 
 	@Override
@@ -102,12 +107,24 @@ public class MachineDriver implements ActionListener, ChangeListener {
 		else if(e.getActionCommand().equals("Halt")) {
 			machine.setMasterState(MasterState.HALTED);
 		}
-		
+		else if(e.getActionCommand().equals("New program")) {
+			machine.setProgram(Program.getDummyProgram());
+			programPanel.setProgramName(Program.getDummyProgram().getName());
+		}
 	}
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		this.speed = ((JSlider)e.getSource()).getValue();
+		if(commandPanel == null) {
+			return;
+		}
+		else if(e.getSource().equals(commandPanel.getSpeedSlider())) {
+			this.speed = ((JSlider)e.getSource()).getValue();
+		}
+		else if(e.getSource().equals(commandPanel.getTapeSlider())) {
+			this.machinePanel.setTapeSize(((JSlider)e.getSource()).getValue() / 100.0);
+			machinePanel.repaint();
+		}
 		
 	}
 	
@@ -130,6 +147,7 @@ public class MachineDriver implements ActionListener, ChangeListener {
 				JOptionPane.showMessageDialog(null, "There is no program loaded into the machine!");
 				return;
 			}
+			resetMachine();
 			ArrayList<Character> newTape = new ArrayList<Character>();
 			String initialTape = programPanel.getInitialTapeText();
 			for(int i = 0; i < initialTape.length(); i++) {
@@ -146,7 +164,7 @@ public class MachineDriver implements ActionListener, ChangeListener {
 					machine.transitionState();
 					machine.performRead();
 					if(machine.getMasterState() == MasterState.HALTED)
-						return;
+						break;
 					this.animateRead();
 					
 					machine.performWrite();
@@ -156,15 +174,14 @@ public class MachineDriver implements ActionListener, ChangeListener {
 					this.animateMove();
 					
 					log.update();
+					log.repaint();
 				}
 				catch(IllegalProgramException ex) {
 					machine.setMasterState(MasterState.ERROR);
-					log.addErrorEntry();
 					ex.printStackTrace();
 				}
 				catch(IndexOutOfBoundsException ex) {
 					machine.setMasterState(MasterState.ERROR);
-					log.addErrorEntry();
 					ex.printStackTrace();
 				}
 				
@@ -173,52 +190,53 @@ public class MachineDriver implements ActionListener, ChangeListener {
 				}
 				
 			}
-			
+			if(machine.getMasterState() == MasterState.HALTED) {
+				log.addHaltEntry();
+			}
+			else if (machine.getMasterState() == MasterState.ERROR) {
+				log.addErrorEntry();
+			}
 			machinePanel.repaint();
 		}
 		
 		public void animateRead() {
+			int sleepFor = BASE_SPEED / speed;
+			
+			machinePanel.repaint();
+			
 			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-						
-					}
-				});
+				Thread.sleep(sleepFor);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}
 			
 		}
 		
 		public void animateWrite() {
+			int sleepFor = BASE_SPEED / speed;
+			
+			
+			machinePanel.repaint();
+			
 			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-						
-					}
-				});
+				Thread.sleep(sleepFor);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
 			}
+			
 			
 		}
 		
 		public void animateMove() {
+			machinePanel.repaint();
+			int sleepFor = BASE_SPEED / speed;
 			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-						
-					}
-				});
+				Thread.sleep(sleepFor);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
 			}
+			
+			machinePanel.repaint();
 			
 		}
 	}

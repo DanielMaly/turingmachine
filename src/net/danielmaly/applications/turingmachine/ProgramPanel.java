@@ -126,5 +126,9 @@ public class ProgramPanel extends JPanel {
 	public int getInitialTapeIndex() {
 		return (Integer) (positionSpin.getValue());
 	}
+	
+	public void setProgramName(String name) {
+		loaded.setText(name);
+	}
 
 }

@@ -9,15 +9,35 @@ import javax.swing.JPanel;
 public class MachinePanel extends JPanel {
 	
 	private TuringMachine machine;
-	private int animationState = 0;
+	private int readAnimationState = 0;
+	private int moveAnimationState = 0;
+	private int writeAnimationState = 0;
+	private double tapeSize = 1;
+	
+	public final static int READ_ANIMATION = 0;
+	public final static int WRITE_ANIMATION = 1;
+	public final static int MOVE_ANIMATION = 2;
 	
 	public MachinePanel(TuringMachine machine) {
 		this.machine = machine;
 		this.setBackground(Color.WHITE);
 	}
 	
-	public void incrementAnimation() {
-		animationState = (animationState + 1) % 24;
+	public void incrementAnimation(int animation) {
+		if(animation == READ_ANIMATION) {
+			readAnimationState = (readAnimationState + 1) % 24;
+		}
+		else if(animation == WRITE_ANIMATION) {
+			writeAnimationState = (writeAnimationState + 1) % 24;
+		}
+		else if(animation == MOVE_ANIMATION) {
+			moveAnimationState = (moveAnimationState + 1) % 24;
+		}
+		
+	}
+	
+	public void setTapeSize(double d) {
+		this.tapeSize = d;
 	}
 	
 	@Override
@@ -38,6 +58,8 @@ public class MachinePanel extends JPanel {
 		
 		int width = this.getWidth();
 		int height = this.getHeight();
+	
+		final int SQUARE_SIDE = (int) (0.445 * height * tapeSize);
 		
 		int leftIndicatorX = 20;
 		int leftIndicatorY = (int) (height * 0.07);
@@ -90,6 +112,21 @@ public class MachinePanel extends JPanel {
 			g.setColor(Color.BLACK);
 		}
 		g.drawString("Writing", rightIndicatorX + 35, leftIndicatorY + 57 + fm.getHeight() / 2);
+		
+		
+		
+		int remainingVerticalSpace = height - leftIndicatorY - 105;
+		int centerOfTapeY = leftIndicatorY + 85 + (remainingVerticalSpace / 2);
+		int topTapeY = centerOfTapeY - (SQUARE_SIDE / 2);
+		int centerSquareX = (width / 2) - (SQUARE_SIDE / 2);
+		int startTapeX = leftIndicatorX + 35;
+		
+		
+		g.drawRoundRect(startTapeX, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		
+		//DRAW SCANNER
+		g.setStroke(new BasicStroke(4.0f));
+		g.drawRoundRect(centerSquareX, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
 		
 	}
 
