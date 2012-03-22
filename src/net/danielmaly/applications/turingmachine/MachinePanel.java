@@ -31,13 +31,13 @@ public class MachinePanel extends JPanel {
 	
 	public void incrementAnimation(int animation) {
 		if(animation == READ_ANIMATION) {
-			readAnimationState = (readAnimationState + 1) % 24;
+			readAnimationState = (readAnimationState + 1) % READ_ANIMATION_STEPS;
 		}
 		else if(animation == WRITE_ANIMATION) {
-			writeAnimationState = (writeAnimationState + 1) % 24;
+			writeAnimationState = (writeAnimationState + 1) % WRITE_ANIMATION_STEPS;
 		}
 		else if(animation == MOVE_ANIMATION) {
-			moveAnimationState = (moveAnimationState + 1) % 24;
+			moveAnimationState = (moveAnimationState + 1) % MOVE_ANIMATION_STEPS;
 		}
 		
 	}
@@ -64,6 +64,8 @@ public class MachinePanel extends JPanel {
 		
 		int width = this.getWidth();
 		int height = this.getHeight();
+		ArrayList<Character> tape = machine.getTape();
+		int index = machine.getTapeIndex();
 	
 		final int SQUARE_SIDE = (int) (0.445 * height * tapeSize);
 		
@@ -96,7 +98,7 @@ public class MachinePanel extends JPanel {
 		
 		int rightIndicatorX = width - 175;
 		g.drawOval(rightIndicatorX, leftIndicatorY, 20, 20);
-		if(machine.getOperation() == Operation.MOVING) {
+		if(machine.getOperation() == Operation.MOVING_RIGHT || machine.getOperation() == Operation.MOVING_LEFT) {
 			g.setColor(Color.BLUE);
 			g.fillOval(rightIndicatorX + 1, leftIndicatorY + 1, 19, 19);
 			g.setColor(Color.BLACK);
@@ -129,13 +131,39 @@ public class MachinePanel extends JPanel {
 		int endTapeX = width - startTapeX; 
 		
 		
-		g.drawRoundRect(startTapeX - 5, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		//g.drawRoundRect(startTapeX - 5, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		
 		
 		//DRAW SCANNER
 		Stroke backup = g.getStroke();
 		g.setStroke(new BasicStroke(4.0f));
 		g.drawRoundRect(centerSquareX, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
 		g.setStroke(backup);
+		
+		//DRAW TAPE LEFT OF SCANNER
+		int startSquareX = centerSquareX;
+		if(machine.getOperation() == Operation.MOVING_LEFT) {
+			startSquareX += moveAnimationState * SQUARE_SIDE / MOVE_ANIMATION_STEPS;
+		}
+		else if(machine.getOperation() == Operation.MOVING_RIGHT) {
+			startSquareX -= moveAnimationState * SQUARE_SIDE / MOVE_ANIMATION_STEPS; 
+		}
+		for(int i = index, j = startSquareX; i >= 0 && j >= -SQUARE_SIDE ; i--, j -= SQUARE_SIDE) {
+			g.drawRoundRect(j, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		}
+		
+		//DRAW TAPE RIGHT OF SCANNER
+		startSquareX = centerSquareX + SQUARE_SIDE;
+		if(machine.getOperation() == Operation.MOVING_LEFT) {
+			startSquareX += moveAnimationState * SQUARE_SIDE / MOVE_ANIMATION_STEPS;
+		}
+		else if(machine.getOperation() == Operation.MOVING_RIGHT) {
+			startSquareX -= moveAnimationState * SQUARE_SIDE / MOVE_ANIMATION_STEPS; 
+		}
+		for(int i = index, j = startSquareX; j < width + SQUARE_SIDE + 5; i++, j+= SQUARE_SIDE) {
+			
+			g.drawRoundRect(j, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		}
 		
 		//DRAW SCANNING LINE
 		if(readAnimationState != 0) {
@@ -147,10 +175,10 @@ public class MachinePanel extends JPanel {
 		
 		
 		//DRAW BOUNDS ON TAPE
-				g.setColor(Color.WHITE);
-				g.fillRect(0, topTapeY, startTapeX - 1, SQUARE_SIDE);
-				g.fillRect(endTapeX, topTapeY, width - endTapeX, SQUARE_SIDE);
-				g.setColor(Color.BLACK);
+		g.setColor(Color.WHITE);
+		g.fillRect(0, topTapeY, startTapeX - 1, SQUARE_SIDE + 1);
+		g.fillRect(endTapeX, topTapeY, width - endTapeX, SQUARE_SIDE + 1);
+		g.setColor(Color.BLACK);
 		
 	}
 

@@ -1,12 +1,7 @@
 package net.danielmaly.applications.turingmachine;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -14,7 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class MachineDriver implements ActionListener, ChangeListener {
+public class MachineDriver extends KeyAdapter implements ActionListener, ChangeListener {
 	
 	private TuringMachine machine = new TuringMachine();
 	
@@ -115,7 +110,7 @@ public class MachineDriver implements ActionListener, ChangeListener {
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if(commandPanel == null) {
+		if(commandPanel == null || programPanel == null) {
 			return;
 		}
 		else if(e.getSource().equals(commandPanel.getSpeedSlider())) {
@@ -125,9 +120,29 @@ public class MachineDriver implements ActionListener, ChangeListener {
 			this.machinePanel.setTapeSize(((JSlider)e.getSource()).getValue() / 100.0);
 			machinePanel.repaint();
 		}
-		
+		else if(e.getSource().equals(programPanel.getSpinner())) {
+			this.machine.setTapeIndex((Integer) ((JSpinner)e.getSource()).getValue());
+			machinePanel.repaint();
+		}
 	}
 	
+	@Override 
+	public void keyTyped(KeyEvent e) {
+		this.initializeTape();
+	}
+	
+	public void initializeTape() {
+		resetMachine();
+		ArrayList<Character> newTape = new ArrayList<Character>();
+		String initialTape = programPanel.getInitialTapeText();
+		for(int i = 0; i < initialTape.length(); i++) {
+			newTape.add(new Character(initialTape.charAt(i)));
+		}
+		
+		machine.setTape(newTape);
+		machine.setTapeIndex(programPanel.getInitialTapeIndex());
+		machinePanel.repaint();
+	}
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -153,15 +168,10 @@ public class MachineDriver implements ActionListener, ChangeListener {
 				JOptionPane.showMessageDialog(null, "There is no program loaded into the machine!");
 				return;
 			}
-			resetMachine();
-			ArrayList<Character> newTape = new ArrayList<Character>();
-			String initialTape = programPanel.getInitialTapeText();
-			for(int i = 0; i < initialTape.length(); i++) {
-				newTape.add(new Character(initialTape.charAt(i)));
-			}
 			
-			machine.setTape(newTape);
-			machine.setTapeIndex(programPanel.getInitialTapeIndex());
+			initializeTape();
+			
+			
 			machine.start();
 			machinePanel.repaint();
 			

@@ -117,6 +117,8 @@ public class ProgramPanel extends JPanel {
 		
 		load.addActionListener(driver);
 		newp.addActionListener(driver);
+		positionSpin.addChangeListener(driver);
+		characters.addKeyListener(driver);
 	}
 	
 	public String getInitialTapeText() {
@@ -129,6 +131,10 @@ public class ProgramPanel extends JPanel {
 	
 	public void setProgramName(String name) {
 		loaded.setText(name);
+	}
+	
+	public JSpinner getSpinner() {
+		return positionSpin;
 	}
 
 }

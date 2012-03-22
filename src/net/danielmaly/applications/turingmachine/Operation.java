@@ -3,5 +3,6 @@ package net.danielmaly.applications.turingmachine;
 public enum Operation {
 	READING,
 	WRITING,
-	MOVING;
+	MOVING_RIGHT,
+	MOVING_LEFT;
 }

@@ -76,7 +76,7 @@ public class TuringMachine {
 	
 	public void performMove() {
 		int direction = this.currentInstruction.getMove();
-		operation = Operation.MOVING;
+		operation = direction == Instruction.LEFT? Operation.MOVING_LEFT : Operation.MOVING_RIGHT;
 		tapeIndex += direction == Instruction.LEFT? -1 : 1;
 		if(tapeIndex < 0) {
 			masterState = MasterState.ERROR;
@@ -129,12 +129,10 @@ public class TuringMachine {
 	}
 	
 	public void reset() {
-		this.tape = new ArrayList<Character> ();
 		this.currentTableEntry = null;
 		this.currentInstruction = null;
 		this.state = null;
 		this.operation = null;
-		this.tapeIndex = 0;
 	}
 	
 }
