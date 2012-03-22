@@ -1,6 +1,7 @@
 package net.danielmaly.applications.turingmachine;
 
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import java.awt.*;
@@ -26,22 +27,33 @@ public class LogTable extends JTable {
 	public void update() {
 		model.addEntry(new Entry(machine.getEntry()));
 		this.revalidate();
+		this.scrollDown();
 	}
 	
 	public void addErrorEntry() {
 		model.addEntry(new Entry(new String[] {"ERROR", "", "", "", ""}));
 		this.revalidate();
+		this.scrollDown();
 	}
 	
 	public void addHaltEntry() {
 		model.addEntry(new Entry(new String[] {"Halt", "", "", "", ""}));
 		this.revalidate();
+		this.scrollDown();
 	}
 	
 	public void removeAllEntries() {
 		model = new LogTableModel();
 		this.setModel(model);
 		this.revalidate();
+	}
+	
+	public void scrollDown() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				scrollRectToVisible(getCellRect(getRowCount()-1, 0, true));
+			}
+		});
 	}
 	
 	
