@@ -31,6 +31,7 @@ public class CommandPanel extends JPanel {
 		speedSlider.addChangeListener(driver);
 		speedSlider.setMaximum(100);
 		speedSlider.setMinimum(1);
+		speedSlider.setValue(50);
 		tapeSlider.addChangeListener(driver);
 		tapeSlider.setMaximum(100);
 		tapeSlider.setMinimum(30);

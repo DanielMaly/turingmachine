@@ -24,7 +24,7 @@ public class MachineDriver implements ActionListener, ChangeListener {
 	private ProgramPanel programPanel;
 	private CommandPanel commandPanel;
 	
-	private int speed;
+	private int speed = 50;
 	private final static int BASE_SPEED = 4000;
 	
 	/** Initializes the GUI.*/
@@ -200,40 +200,48 @@ public class MachineDriver implements ActionListener, ChangeListener {
 		}
 		
 		public void animateRead() {
-			int sleepFor = BASE_SPEED / speed;
+			int sleepFor = BASE_SPEED / speed / MachinePanel.READ_ANIMATION_STEPS;
 			
 			machinePanel.repaint();
-			
-			try {
-				Thread.sleep(sleepFor);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			for (int i = 0; i < MachinePanel.READ_ANIMATION_STEPS; i++) {
+				machinePanel.incrementAnimation(MachinePanel.READ_ANIMATION);
+				machinePanel.repaint();
+				try {
+					Thread.sleep(sleepFor);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			
 		}
 		
 		public void animateWrite() {
-			int sleepFor = BASE_SPEED / speed;
-			
+			int sleepFor = BASE_SPEED / speed / MachinePanel.WRITE_ANIMATION_STEPS;
 			
 			machinePanel.repaint();
-			
-			try {
-				Thread.sleep(sleepFor);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			for (int i = 0; i < MachinePanel.WRITE_ANIMATION_STEPS; i++) {
+				machinePanel.incrementAnimation(MachinePanel.WRITE_ANIMATION);
+				machinePanel.repaint();
+				try {
+					Thread.sleep(sleepFor);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			
-			
 		}
 		
 		public void animateMove() {
+			int sleepFor = BASE_SPEED / speed / MachinePanel.MOVE_ANIMATION_STEPS;
+			
 			machinePanel.repaint();
-			int sleepFor = BASE_SPEED / speed;
-			try {
-				Thread.sleep(sleepFor);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			for (int i = 0; i < MachinePanel.MOVE_ANIMATION_STEPS; i++) {
+				machinePanel.incrementAnimation(MachinePanel.MOVE_ANIMATION);
+				machinePanel.repaint();
+				try {
+					Thread.sleep(sleepFor);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			machinePanel.repaint();

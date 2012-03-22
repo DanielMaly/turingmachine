@@ -5,6 +5,8 @@ import java.awt.*;
 
 import javax.swing.JPanel;
 
+import quicktime.app.sg.SGCaptureCallback;
+
 
 public class MachinePanel extends JPanel {
 	
@@ -17,6 +19,10 @@ public class MachinePanel extends JPanel {
 	public final static int READ_ANIMATION = 0;
 	public final static int WRITE_ANIMATION = 1;
 	public final static int MOVE_ANIMATION = 2;
+	
+	public static final int READ_ANIMATION_STEPS = 24;
+	public static final int WRITE_ANIMATION_STEPS = 24;
+	public static final int MOVE_ANIMATION_STEPS = 24;
 	
 	public MachinePanel(TuringMachine machine) {
 		this.machine = machine;
@@ -120,13 +126,31 @@ public class MachinePanel extends JPanel {
 		int topTapeY = centerOfTapeY - (SQUARE_SIDE / 2);
 		int centerSquareX = (width / 2) - (SQUARE_SIDE / 2);
 		int startTapeX = leftIndicatorX + 35;
+		int endTapeX = width - startTapeX; 
 		
 		
-		g.drawRoundRect(startTapeX, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		g.drawRoundRect(startTapeX - 5, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
 		
 		//DRAW SCANNER
+		Stroke backup = g.getStroke();
 		g.setStroke(new BasicStroke(4.0f));
 		g.drawRoundRect(centerSquareX, topTapeY, SQUARE_SIDE, SQUARE_SIDE, 10, 10);
+		g.setStroke(backup);
+		
+		//DRAW SCANNING LINE
+		if(readAnimationState != 0) {
+			g.setStroke(new BasicStroke(0.5f));
+			int lineY = topTapeY + (readAnimationState * (SQUARE_SIDE / READ_ANIMATION_STEPS));
+			g.drawLine(centerSquareX, lineY, centerSquareX + SQUARE_SIDE, lineY);
+			g.setStroke(backup);
+		}
+		
+		
+		//DRAW BOUNDS ON TAPE
+				g.setColor(Color.WHITE);
+				g.fillRect(0, topTapeY, startTapeX - 1, SQUARE_SIDE);
+				g.fillRect(endTapeX, topTapeY, width - endTapeX, SQUARE_SIDE);
+				g.setColor(Color.BLACK);
 		
 	}
 
