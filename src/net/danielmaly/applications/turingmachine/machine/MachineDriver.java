@@ -5,6 +5,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.danielmaly.applications.turingmachine.editor.EditorFrame;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -13,7 +15,7 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 	
 	private TuringMachine machine = new TuringMachine();
 	
-	private JFrame window = new MainFrame();
+	private MainFrame window = new MainFrame();
 	private MachinePanel machinePanel;
 	private LogTable log = new LogTable(machine);
 	private ProgramPanel programPanel;
@@ -103,8 +105,7 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 			machine.setMasterState(MasterState.HALTED);
 		}
 		else if(e.getActionCommand().equals("New program")) {
-			machine.setProgram(Program.getDummyProgram());
-			programPanel.setProgramName(Program.getDummyProgram().getName());
+			new EditorFrame(window, this);
 		}
 	}
 	
