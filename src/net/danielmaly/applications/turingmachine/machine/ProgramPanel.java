@@ -39,7 +39,7 @@ public class ProgramPanel extends JPanel {
 	});
 	
 	private JButton load = new JButton("Load from file");
-	private JButton newp = new JButton("New program");
+	private JButton newp = new JButton("Open editor");
 	
 	private MachineDriver driver;
 	

@@ -4,16 +4,22 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.danielmaly.applications.turingmachine.editor.EditorFrame;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 
 public class MachineDriver extends KeyAdapter implements ActionListener, ChangeListener {
 	
 	private TuringMachine machine = new TuringMachine();
+	private EditorFrame editor;
+	
+	public final static String PROGRAM_NAME = "Turing Machine Simulator";
+	public final static String FILE_EXTENSION = "tur";
 	
 	private MainFrame window = new MainFrame();
 	private MachinePanel machinePanel;
@@ -33,6 +39,7 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 		machinePanel = new MachinePanel(machine);
 		programPanel = new ProgramPanel(this);
 		commandPanel = new CommandPanel(this);
+		editor = new EditorFrame(window, this);
 		
 		JSeparator separator = new JSeparator();
 		separator.setOpaque(false);
@@ -104,8 +111,11 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 		else if(e.getActionCommand().equals("Halt")) {
 			machine.setMasterState(MasterState.HALTED);
 		}
-		else if(e.getActionCommand().equals("New program")) {
-			new EditorFrame(window, this);
+		else if(e.getActionCommand().equals("Open editor")) {
+			editor.setVisible(true);
+		}
+		else if(e.getActionCommand().equals("Load from file")) {
+			this.load();
 		}
 	}
 	
@@ -136,6 +146,39 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 				}
 			});
 		}
+	}
+	
+	public void load() {
+		try {
+			File file = MachineDriver.openFile();
+			FileInputStream fos = new FileInputStream(file);
+			ObjectInputStream in = new ObjectInputStream(fos);
+			in.readObject();
+
+		
+			try {
+				this.loadIntoMachine((Program) in.readObject());
+			} catch (EOFException e) {
+				JOptionPane.showMessageDialog(null, "This file only contains an incomplete state table. Press OK to open the file in the editor");
+				editor.setVisible(true);
+				editor.openFile(file);
+			}
+			
+		}
+		catch(IOException ex) {
+			JOptionPane.showMessageDialog(null, "There was an error opening the file.");
+			ex.printStackTrace();
+		}
+		catch(ClassNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, "There was an error opening the file.");
+			ex.printStackTrace();
+		}
+	}
+	
+	public void loadIntoMachine(Program p) {
+		this.machine.setProgram(p);
+		this.programPanel.setProgramName(p.getName());
+		this.initializeTape();
 	}
 	
 	public void initializeTape() {
@@ -172,6 +215,21 @@ public class MachineDriver extends KeyAdapter implements ActionListener, ChangeL
 		});
 	
 	}
+	
+	public static File openFile() {
+		JFileChooser fc = new JFileChooser();
+
+		fc.addChoosableFileFilter(new FileNameExtensionFilter(PROGRAM_NAME + " program (*." +FILE_EXTENSION+ ")", FILE_EXTENSION));
+		fc.setAcceptAllFileFilterUsed(false);
+		
+		int retVal = fc.showOpenDialog(null);
+		if (retVal == JFileChooser.APPROVE_OPTION) {
+			File openFile = fc.getSelectedFile();
+			return openFile;
+		}
+		else return null;
+	}
+	
 	
 	private class Animation implements Runnable {
 		
